@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: "T6pda3Dc7srYMXrcjdUK23gYhJdvr5Ly"
+      MYSQL_DATABASE: "heatup_fashion"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "unblsXvkEHSnPylTuNEUuR4u7xVh5JKz"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:

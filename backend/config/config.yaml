@@ -1,0 +1,6 @@
+database:
+  user: "admin"
+  password: "unblsXvkEHSnPylTuNEUuR4u7xVh5JKz"
+  dbname: "heatup_fashion"
+  host: "localhost"
+  port: 3306
