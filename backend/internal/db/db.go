@@ -35,7 +35,7 @@ func runMigrations() {
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://db/migrations",
+		"file://internal/db/migrations",
 		"mysql", driver)
 	if err != nil {
 		log.Fatalf("Failed to start migrations: %v", err)

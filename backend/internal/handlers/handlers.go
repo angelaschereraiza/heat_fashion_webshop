@@ -1,37 +1,51 @@
 package handlers
 
 import (
-	"database/sql"
-	"fmt"
+	"backend/internal/db"
+	"backend/internal/models"
+	"encoding/json"
 	"net/http"
-	"strings"
 
-	"backend/db"
-	"backend/models"
+	"github.com/google/uuid"
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome to the webshop API!")
-}
-
 func ProductHandler(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(r.URL.Path, "/")
-	if len(parts) < 3 {
-		http.Error(w, "Product ID is missing", http.StatusBadRequest)
-		return
-	}
-	productID := parts[2]
 
-	var product models.Product
-	err := db.DB.Get(&product, "SELECT * FROM products WHERE id = ?", productID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			http.Error(w, "Product not found", http.StatusNotFound)
-		} else {
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+	// Handle GET requests to return all products
+	if r.Method == http.MethodGet {
+		products := []models.Product{}
+		err := db.DB.Select(&products, "SELECT * FROM products")
+		if err != nil {
+			http.Error(w, "Error fetching products", http.StatusInternalServerError)
+			return
 		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(products)
 		return
 	}
 
-	fmt.Fprintf(w, "Product: %s, Price: %.2f", product.Name, product.Price)
+	// Handle POST requests to create a new product
+	if r.Method == http.MethodPost {
+		var product models.Product
+		err := json.NewDecoder(r.Body).Decode(&product)
+		if err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+
+		product.ID = uuid.New()
+
+		_, err = db.DB.Exec("INSERT INTO products (id, name, price) VALUES (?, ?, ?)", product.ID, product.Name, product.Price)
+		if err != nil {
+			http.Error(w, "Error inserting product", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(product)
+		return
+	}
+
+	http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 }

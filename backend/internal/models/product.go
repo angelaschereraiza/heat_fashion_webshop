@@ -5,7 +5,7 @@ import (
 )
 
 type Product struct {
-	ID    uuid.UUID `db:"id"`
-	Name  string    `db:"name"`
-	Price float64   `db:"price"`
+	ID    uuid.UUID `db:"id" json:"id"`
+	Name  string    `db:"name" json:"name"`
+	Price float64   `db:"price" json:"price"`
 }

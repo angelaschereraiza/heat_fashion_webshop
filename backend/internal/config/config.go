@@ -18,7 +18,7 @@ type Config struct {
 
 func LoadConfig() (*Config, error) {
 	var config Config
-	yamlFile, err := ioutil.ReadFile("config/config.yaml")
+	yamlFile, err := ioutil.ReadFile("internal/config/config.yaml")
 	if err != nil {
 		return nil, err
 	}

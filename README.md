@@ -8,18 +8,6 @@ This is a webshop project with a **Go** backend and a **Vue.js** frontend. The b
 - **Go** installed
 - **Docker** and **Docker Compose** installed
 
-### Running the Backend
-
-1. Navigate to the `cmd/webshop` directory:
-    ```bash
-    cd cmd/webshop
-    ```
-
-2. Run the backend:
-    ```bash
-    go run main.go
-    ```
-
 ### Setting Up MariaDB Database
 
 1. Navigate to the backend's `docker` directory:
@@ -34,12 +22,12 @@ This is a webshop project with a **Go** backend and a **Vue.js** frontend. The b
 
 3. Ensure the MariaDB container is running:
     ```bash
-    docker start backend_mariadb_1
+    docker start docker_mariadb_1
     ```
 
 4. Access the running container:
     ```bash
-    docker exec -it backend_mariadb_1 bash
+    docker exec -it docker_mariadb_1 bash
     ```
 
 5. Connect to the MariaDB instance:
@@ -49,7 +37,7 @@ This is a webshop project with a **Go** backend and a **Vue.js** frontend. The b
 
     Use the password you defined in the `docker-compose.yml` file.
 
-### Example: Database Queries
+#### Example: Database Queries
 
 Once connected to MariaDB, you can execute the following SQL queries:
 
@@ -71,6 +59,18 @@ Once connected to MariaDB, you can execute the following SQL queries:
 - List all products:
     ```sql
     SELECT * FROM product;
+    ```
+
+### Running the Backend
+
+1. Navigate to the `cmd/webshop` directory:
+    ```bash
+    cd cmd/webshop
+    ```
+
+2. Run the backend:
+    ```bash
+    go run main.go
     ```
 
 ## Frontend
