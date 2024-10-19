@@ -28,8 +28,8 @@ func main() {
 	http.HandleFunc("/", handlers.HomeHandler)
 	http.HandleFunc("/products/", handlers.ProductHandler)
 
-	log.Println("Server is running on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	log.Println("Server is running on :3000")
+	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatal(err)
 	}
 }
