@@ -11,7 +11,7 @@ import (
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome to HeatUp Fashion API!")
+	fmt.Fprintln(w, "Welcome to the webshop API!")
 }
 
 func ProductHandler(w http.ResponseWriter, r *http.Request) {

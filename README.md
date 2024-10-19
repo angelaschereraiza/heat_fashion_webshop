@@ -1,4 +1,4 @@
-# HeatUp Fashion Webshop
+# Webshop
 
 This is a webshop project with a **Go** backend and a **Vue.js** frontend. The backend uses a **MariaDB** database, which is run using Docker.
 
@@ -58,9 +58,9 @@ Once connected to MariaDB, you can execute the following SQL queries:
     SHOW DATABASES;
     ```
 
-- Switch to the `heatup_fashion` database:
+- Switch to the `webshop` database:
     ```sql
-    USE heatup_fashion;
+    USE webshop;
     ```
 
 - Show the structure of the `product` table:

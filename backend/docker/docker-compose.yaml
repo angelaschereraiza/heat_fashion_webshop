@@ -5,7 +5,7 @@ services:
     image: mariadb:latest
     environment:
       MYSQL_ROOT_PASSWORD: "T6pda3Dc7srYMXrcjdUK23gYhJdvr5Ly"
-      MYSQL_DATABASE: "heatup_fashion"
+      MYSQL_DATABASE: "webshop"
       MYSQL_USER: "admin"
       MYSQL_PASSWORD: "unblsXvkEHSnPylTuNEUuR4u7xVh5JKz"
     ports:
