@@ -4,3 +4,6 @@ database:
   dbname: "webshop"
   host: "localhost"
   port: 3306
+ali_express_api:
+  client_id: ""
+  client_secret: ""

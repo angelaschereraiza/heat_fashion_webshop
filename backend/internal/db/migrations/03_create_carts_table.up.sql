@@ -1,0 +1,4 @@
+CREATE TABLE carts (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);

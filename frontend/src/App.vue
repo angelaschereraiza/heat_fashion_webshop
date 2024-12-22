@@ -1,14 +1,20 @@
 <template>
-  <Products />
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
 <script>
-import Products from './components/Products.vue'
-
-export default {
-  name: 'WebshopApp',
-  components: {
-    Products
+  export default {
+    name: 'App'
   }
-}
 </script>
+
+<style>
+  body {
+      background-color: #000;
+      color: #fff;
+      font-family: "Helvetia", Arial, sans-serif;
+      margin: 0;
+  }
+</style>

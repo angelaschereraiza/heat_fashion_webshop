@@ -5,8 +5,9 @@ import (
 )
 
 type Product struct {
-	ID           uuid.UUID `db:"id" json:"id"`
-	AliExpressID int       `db:"aliExpressID" json:"aliExpressID"`
-	Name         string    `db:"name" json:"name"`
-	Price        float64   `db:"price" json:"price"`
+	ID                uuid.UUID         `db:"id" json:"id"`
+	AliExpressID      int               `db:"aliExpressID" json:"aliExpressID"`
+	AliExpressDetails AliExpressDetails `json:"aliExpressDetails"`
+	Name              string            `db:"name" json:"name"`
+	Price             float64           `db:"price" json:"price"`
 }

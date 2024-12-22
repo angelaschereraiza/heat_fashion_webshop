@@ -14,11 +14,16 @@ type Config struct {
 		Host     string `yaml:"host"`
 		Port     int    `yaml:"port"`
 	} `yaml:"database"`
+	AliExpressAPI struct {
+		ClientID     string `yaml:"client_id"`
+		ClientSecret string `yaml:"client_secret"`
+		AccessToken  *string
+	} `yaml:"ali_express_api"`
 }
 
 func LoadConfig() (*Config, error) {
 	var config Config
-	yamlFile, err := ioutil.ReadFile("internal/config/config.yaml")
+	yamlFile, err := ioutil.ReadFile("../../internal/config/config.yaml")
 	if err != nil {
 		return nil, err
 	}

@@ -58,7 +58,7 @@ Once connected to MariaDB, you can execute the following SQL queries:
 
 - List all products:
     ```sql
-    SELECT * FROM product;
+    SELECT * FROM products;
     ```
 
 ### Running the Backend
