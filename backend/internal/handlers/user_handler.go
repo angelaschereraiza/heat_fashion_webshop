@@ -4,13 +4,14 @@ import (
 	"backend/internal/db"
 	"backend/internal/models"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/argon2"
 )
 
-func UserHandler() http.HandlerFunc {
+func RegisterHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			handleRegister(w, r)
@@ -46,6 +47,7 @@ func LogoutHandler() http.HandlerFunc {
 func handleRegister(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		log.Println("Invalid request body:", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -57,6 +59,7 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
 
 	hashedPassword, err := hashPassword(user.Password)
 	if err != nil {
+		log.Println("Error hashing password:", err)
 		http.Error(w, "Error hashing password", http.StatusInternalServerError)
 		return
 	}
@@ -67,6 +70,7 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
 	_, err = db.DB.Exec("INSERT INTO users (id, mail, password, first_name, last_name, phone_number, address, city, postal_code, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		user.ID, user.Mail, user.Password, user.FirstName, user.LastName, user.PhoneNumber, user.Address, user.City, user.PostalCode, user.Country)
 	if err != nil {
+		log.Println("Error creating user:", err)
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
 		return
 	}
@@ -81,6 +85,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 		Password string `json:"password"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
+		log.Println("Invalid request body:", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -88,6 +93,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := db.DB.Get(&user, "SELECT id, mail, password FROM users WHERE mail = ?", credentials.Mail)
 	if err != nil {
+		log.Println("Invalid mail or password:", err)
 		http.Error(w, "Invalid mail or password", http.StatusUnauthorized)
 		return
 	}

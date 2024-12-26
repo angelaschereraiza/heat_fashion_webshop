@@ -5,6 +5,7 @@ import (
 	"backend/internal/db"
 	"backend/internal/models"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -21,6 +22,7 @@ func ProductHandler(cfg *config.Config) http.HandlerFunc {
 			products := []models.Product{}
 			err := db.DB.Select(&products, "SELECT * FROM products")
 			if err != nil {
+				log.Println("Error fetching products:", err)
 				http.Error(w, "Error fetching products", http.StatusInternalServerError)
 				return
 			}
@@ -42,6 +44,7 @@ func handleProductDetail(w http.ResponseWriter, id string) {
 	product := models.Product{}
 	err := db.DB.Get(&product, "SELECT * FROM products WHERE id = ?", id)
 	if err != nil {
+		log.Println("Product not found:", err)
 		http.Error(w, "Product not found", http.StatusNotFound)
 		return
 	}

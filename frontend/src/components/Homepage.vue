@@ -1,11 +1,12 @@
 <template>
   <div class="homepage">
     <header class="main-header">
-      <h1>Heat Fashion</h1>
+      <h1>
+        <img src="@/assets/logo.png" alt="Logo" class="logo-image" />Heat Fashion
+      </h1>
       <p>Stay warm and stylish with our electrically heated clothing.</p>
     </header>
 
-    <!-- Produktübersicht -->
     <ProductManager />
   </div>
 </template>
@@ -25,6 +26,13 @@ export default {
   .main-header {
     text-align: center;
     margin-bottom: 30px;
+
+    .logo-image {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      margin-right: 4px;
+    }
 
     h1 {
       font-size: 36px;

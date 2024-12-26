@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HeaderLayout from '@/components/HeaderLayout.vue';
+import HeaderLayout from '@/components/Header.vue';
 import Homepage from '@/components/Homepage.vue';
 import ProductDetail from '@/components/ProductDetail.vue';
 import Cart from '@/components/Cart.vue';

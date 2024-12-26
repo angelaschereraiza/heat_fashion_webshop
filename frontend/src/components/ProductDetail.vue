@@ -5,124 +5,111 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon">
           <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z" />
         </svg>
-        <span class="tooltip">Zurück</span>
+        <span class="tooltip">Back</span>
       </button>
       <h1>Product Details</h1>
     </header>
 
     <div v-if="product" class="product-detail">
-      <h2 class="product-name">{{ product.name }}</h2>
-      <div class="product-attributes">
-        <div class="attribute">
-          <span class="label">Price:</span>
-          <span class="value">CHF {{ product.price }}</span>
+      <div class="product-layout">
+        <div class="product-info">
+          <h2 class="product-name">{{ product.name }}</h2>
+          <div class="product-attributes">
+            <div class="attribute">
+              <span class="label">Price:</span>
+              <span class="value">CHF {{ product.price }}</span>
+            </div>
+            <div class="attribute">
+              <span class="label">ID:</span>
+              <span class="value">{{ product.id }}</span>
+            </div>
+            <div class="attribute">
+              <span class="label">AliExpress ID:</span>
+              <span class="value">{{ product.aliExpressID }}</span>
+            </div>
+          </div>
         </div>
-        <div class="attribute">
-          <span class="label">ID:</span>
-          <span class="value">{{ product.id }}</span>
-        </div>
-        <div class="attribute">
-          <span class="label">AliExpress ID:</span>
-          <span class="value">{{ product.aliExpressID }}</span>
+        <div class="action-section">
+          <div class="quantity-selector">
+            <button @click="decrementQuantity" :disabled="quantity === 1">-</button>
+            <span>{{ quantity }}</span>
+            <button @click="incrementQuantity">+</button>
+          </div>
+          <button class="add-to-cart-button" @click="addToCart">Add to Cart</button>
         </div>
       </div>
     </div>
-    <p v-else>Loading product details...</p>
+    <div v-else>
+      <div class="loading-icon"></div>
+    </div>
+    <div v-for="(toast, index) in toasts" :key="index" :class="['toast', toast.type]">{{ toast.message }}</div>
   </div>
 </template>
 
 <script>
-  import axios from 'axios'
+  import axios from 'axios';
 
   export default {
     name: 'ProductDetail',
     props: ['id'],
     data() {
       return {
-        product: null
-      }
+        product: null,
+        toasts: [],
+        quantity: 1,
+      };
     },
     methods: {
       async fetchProduct() {
         try {
-          const response = await axios.get(`http://localhost:3000/products/${this.id}`)
-          this.product = response.data
+          const response = await axios.get(`http://localhost:3000/products/${this.id}`);
+          this.product = response.data;
         } catch (error) {
-          console.error('Error fetching product details:', error)
+          console.error('Error fetching product details:', error);
         }
       },
       goBack() {
-        this.$router.go(-1)
-      }
+        this.$router.go(-1);
+      },
+      incrementQuantity() {
+        this.quantity++;
+      },
+      decrementQuantity() {
+        if (this.quantity > 1) {
+          this.quantity--;
+        }
+      },
+      async addToCart() {
+        try {
+          const cartItem = {
+            product_id: this.product.id,
+            quantity: this.quantity,
+          };
+
+          await axios.post('http://localhost:3000/cart/', cartItem, {
+            withCredentials: true,
+          });
+
+          this.showToast('Product added to cart successfully!', 'success');
+        } catch (error) {
+          console.error('Error adding product to cart:', error);
+          this.showToast('Failed to add product to cart.', 'error');
+        }
+      },
+      showToast(message, type) {
+        this.toasts.push({ message, type });
+        setTimeout(() => {
+          this.toasts.shift();
+        }, 5000);
+      },
     },
     mounted() {
-      this.fetchProduct()
-    }
-  }
+      this.fetchProduct();
+    },
+  };
 </script>
 
 <style scoped>
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #1a1a1a;
-  color: #f1f1f1;
-  font-family: 'Arial', sans-serif;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  cursor: pointer;
-  padding: 0;
-  transition: transform 0.2s;
-  border-radius: 10px;
-  position: relative;
-}
-
-.back-button:hover {
-  transform: scale(1.1);
-}
-
-.back-button:hover .tooltip {
-  opacity: 1;
-  visibility: visible;
-}
-
-.tooltip {
-  position: absolute;
-  bottom: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 14px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-.icon {
-  fill: #ff4500;
-  width: 46px;
-  height: 46px;
-}
-
 .product-detail {
   background-color: #2a2a2a;
   padding: 20px;
@@ -130,6 +117,23 @@
   color: #f1f1f1;
   text-align: left;
   margin: 20px auto;
+}
+
+.product-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.product-info {
+  max-width: 70%;
+}
+
+.action-section {
+  display: flex;
+  align-self: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .product-name {
@@ -160,7 +164,41 @@
   text-align: left;
   color: #ff4500;
 }
+
+.add-to-cart-button {
+  margin-top: 12px;
+  padding: 10px 20px;
+  background-color: #ff4500;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: transform 0.2s;
+}
+
+.add-to-cart-button:hover {
+  background-color: #e63900;
+  transform: scale(1.1);
+}
+
+.loading-icon {
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 </style>
-
-
-

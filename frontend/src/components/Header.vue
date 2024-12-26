@@ -2,7 +2,9 @@
 <div>
     <header class="main-header">
     <div class="header-menu">
-        <h1 class="logo" @click="goToHomepage">Heat Fashion</h1>
+        <h1 class="logo" @click="goToHomepage">
+          <img src="@/assets/logo.png" alt="Logo" class="logo-image" />Heat Fashion
+        </h1>
         <nav>
             <button @click="goToProfile" class="menu-button">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon">
@@ -63,11 +65,18 @@
 }
 
 .logo {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
   color: #ff4500;
   margin: 0;
   cursor: pointer;
+}
+
+.logo-image {
+  width: 23px;
+  height: 23px;
+  object-fit: contain;
+  margin-right: 4px;
 }
 
 nav {

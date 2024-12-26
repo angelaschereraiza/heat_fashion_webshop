@@ -27,7 +27,7 @@ func main() {
 
 	http.HandleFunc("/products/", middleware.WithCORS(handlers.ProductHandler(cfg)))
 	http.HandleFunc("/cart/", middleware.WithCORS(handlers.CartHandler()))
-	http.HandleFunc("/users/", middleware.WithCORS(handlers.UserHandler()))
+	http.HandleFunc("/register/", middleware.WithCORS(handlers.RegisterHandler()))
 	http.HandleFunc("/login/", middleware.WithCORS(handlers.LoginHandler()))
 	http.HandleFunc("/logout/", middleware.WithCORS(handlers.LogoutHandler()))
 

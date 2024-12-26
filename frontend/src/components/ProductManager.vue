@@ -49,17 +49,6 @@
 </script>
   
 <style scoped>
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #1a1a1a;
-    color: #f1f1f1;
-    font-family: 'Arial', sans-serif;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  }
-  
   .section-title {
     font-size: 24px;
     color: #ff4500;
