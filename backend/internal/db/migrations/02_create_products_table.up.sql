@@ -1,0 +1,10 @@
+CREATE TABLE products (
+    id UUID PRIMARY KEY,
+    category_id UUID NOT NULL,
+    ali_express_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);

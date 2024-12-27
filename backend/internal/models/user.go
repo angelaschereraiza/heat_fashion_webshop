@@ -1,6 +1,10 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
 	ID          uuid.UUID `db:"id" json:"id"`
@@ -13,4 +17,6 @@ type User struct {
 	City        string    `db:"city" json:"city"`
 	PostalCode  string    `db:"postal_code" json:"postal_code"`
 	Country     string    `db:"country_code" json:"country_code"`
+	CreatedAt   time.Time `db:"created_at"`
+	UpdatedAt   time.Time `db:"updated_at"`
 }

@@ -17,17 +17,17 @@
         <div class="form-row">
           <div class="form-group half-width">
             <label for="firstName">First Name</label>
-            <input type="text" v-model="newUser.first_name" required />
+            <input type="text" v-model="newUser.firstName" required />
           </div>
           <div class="form-group half-width">
             <label for="lastName">Last Name</label>
-            <input type="text" v-model="newUser.last_name" required />
+            <input type="text" v-model="newUser.lastName" required />
           </div>
         </div>
 
         <div class="form-group">
           <label for="mail">Email</label>
-          <input type="email" v-model="newUser.mail" required />
+          <input type="mail" v-model="newUser.mail" required />
         </div>
 
         <div class="form-row">
@@ -45,7 +45,7 @@
         <div class="form-row">
           <div class="form-group quarter-width">
             <label for="countryCode">Country Code</label>
-            <select v-model="newUser.country_code" required>
+            <select v-model="newUser.countryCode" required>
               <option v-for="code in countryCodes" :value="code.value" :key="code.value">
                 {{ code.label }}
               </option>
@@ -53,7 +53,7 @@
           </div>
           <div class="form-group three-quarters-width">
             <label for="phoneNumber">Phone Number</label>
-            <input type="text" v-model="newUser.phone_number" />
+            <input type="text" v-model="newUser.phoneNumber" />
           </div>
         </div>
 
@@ -65,7 +65,7 @@
         <div class="form-row">
           <div class="form-group quarter-width">
             <label for="postalCode">Postal Code</label>
-            <input type="text" v-model="newUser.postal_code" />
+            <input type="text" v-model="newUser.postalCode" />
           </div>
           <div class="form-group three-quarters-width">
             <label for="city">City</label>
@@ -87,8 +87,23 @@
       </form>
     </div>
 
+    <div v-else-if="view === 'login'">
+      <form @submit.prevent="login">
+        <div class="form-group">
+          <label for="mail">Email:</label>
+          <input type="mail" v-model="credentials.mail" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" v-model="credentials.password" required />
+        </div>
+        <button type="submit" class="button">Login</button>
+        <p class="switch-view" @click="switchView('register')">Don't have an account? Register here.</p>
+      </form>
+    </div>
+
     <div v-else-if="view === 'profile'">
-      <h2>Welcome, {{ user.first_name }} {{ user.last_name }}</h2>
+      <h2>Welcome, {{ user.firstName }} {{ user.lastName }}</h2>
       <div class="profile-details">
         <div class="attribute">
           <span class="label">Email:</span>
@@ -114,29 +129,28 @@
           <span class="label">Country:</span>
           <span class="value">{{ user.country }}</span>
         </div>
-        <button @click="logout" class="button">Logout</button>
       </div>
+      <button @click="logout" class="button">Logout</button>
     </div>
+    <div v-for="(toast, index) in toasts" :key="index" :class="['toast', toast.type]">{{ toast.message }}</div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   name: 'UserForm',
   data() {
     return {
-      view: 'register',
+      view: 'login',
       user: null,
       credentials: {
-        email: '',
+        mail: '',
         password: '',
       },
       newUser: {
         firstName: '',
         lastName: '',
-        email: '',
+        mail: '',
         password: '',
         countryCode: '',
         phoneNumber: '',
@@ -146,41 +160,9 @@ export default {
         country: '',
       },
       confirmPassword: '',
-      countries: [
-        { label: 'Australia', value: 'AU' },
-        { label: 'Austria', value: 'AT' },
-        { label: 'Belgium', value: 'BE' },
-        { label: 'Canada', value: 'CA' },
-        { label: 'Denmark', value: 'DK' },
-        { label: 'Finland', value: 'FI' },
-        { label: 'France', value: 'FR' },
-        { label: 'Germany', value: 'DE' },
-        { label: 'Ireland', value: 'IE' },
-        { label: 'Italy', value: 'IT' },
-        { label: 'Netherlands', value: 'NL' },
-        { label: 'Norway', value: 'NO' },
-        { label: 'Sweden', value: 'SE' },
-        { label: 'Switzerland', value: 'CH' },
-        { label: 'United Kingdom', value: 'UK' },
-        { label: 'United States', value: 'US' },
-      ],
-      countryCodes: [
-        { label: '+61 (Australia)', value: '+61' },
-        { label: '+43 (Austria)', value: '+43' },
-        { label: '+32 (Belgium)', value: '+32' },
-        { label: '+45 (Denmark)', value: '+45' },
-        { label: '+358 (Finland)', value: '+358' },
-        { label: '+33 (France)', value: '+33' },
-        { label: '+49 (Germany)', value: '+49' },
-        { label: '+353 (Ireland)', value: '+353' },
-        { label: '+39 (Italy)', value: '+39' },
-        { label: '+31 (Netherlands)', value: '+31' },
-        { label: '+47 (Norway)', value: '+47' },
-        { label: '+46 (Sweden)', value: '+46' },
-        { label: '+41 (Switzerland)', value: '+41' },
-        { label: '+44 (United Kingdom)', value: '+44' },
-        { label: '+1 (USA)', value: '+1' },
-      ],
+      toasts: [],
+      countries: [],
+      countryCodes: [],
     };
   },
   computed: {
@@ -191,34 +173,65 @@ export default {
   methods: {
     async login() {
       try {
-        const response = await axios.post('http://localhost:3000/login/', this.credentials, {
-          withCredentials: true,
+        const response = await fetch('http://localhost:3000/login/', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.credentials),
         });
-        this.user = response.data;
+
+        if (!response.ok) {
+          throw new Error('Login failed');
+        }
+
+        const data = await response.json();
+        this.user = data;
         this.view = 'profile';
+        this.showToast('Login successful!', 'success');
       } catch (error) {
-        alert('Login failed. Please check your credentials.');
+        console.error('Login failed:', error);
+        this.showToast('Login failed. Please check your credentials.', 'error');
       }
     },
     async register() {
       if (this.passwordMismatch) {
-        alert('Passwords do not match');
+        this.showToast('Passwords do not match.', 'error');
         return;
       }
       try {
-        await axios.post('http://localhost:3000/register/', this.newUser, {
-          withCredentials: true,
+        const response = await fetch('http://localhost:3000/register/', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.newUser),
         });
-        alert('Registration successful! Please login.');
+
+        if (!response.ok) {
+          throw new Error('Registration failed');
+        }
+
+        this.showToast('Registration successful! Please login.', 'success');
         this.switchView('login');
       } catch (error) {
-        alert('Registration failed. Please try again.');
+        console.error('Registration failed:', error);
+        this.showToast('Registration failed. Please try again.', 'error');
       }
     },
     logout() {
       this.user = null;
-      this.credentials = { email: '', password: '' };
+      this.credentials = { mail: '', password: '' };
       this.view = 'login';
+      this.showToast('Logged out successfully!', 'success');
+    },
+    showToast(message, type) {
+      this.toasts.push({ message, type });
+      setTimeout(() => {
+        this.toasts.shift();
+      }, 5000);
     },
     switchView(view) {
       this.view = view;
@@ -320,8 +333,10 @@ select {
 }
 
 .profile-details {
+  margin-bottom: 16px;
+
   .attribute {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
 

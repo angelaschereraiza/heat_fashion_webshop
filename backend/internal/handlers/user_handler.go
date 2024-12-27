@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/internal/db"
 	"backend/internal/models"
+	"encoding/base64"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -113,13 +114,15 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func hashPassword(password string) (string, error) {
-	salt := []byte("somesecurestaticrandomsalt")
+	salt := []byte("vc59k2hplzW69NW61VqjH6rwqwai0mN8")
 	hashed := argon2.IDKey([]byte(password), salt, 1, 64*1024, 4, 32)
-	return string(hashed), nil
+	encoded := base64.StdEncoding.EncodeToString(hashed)
+	return encoded, nil
 }
 
 func verifyPassword(hashedPassword, password string) bool {
-	salt := []byte("somesecurestaticrandomsalt")
+	salt := []byte("vc59k2hplzW69NW61VqjH6rwqwai0mN8")
 	expectedHash := argon2.IDKey([]byte(password), salt, 1, 64*1024, 4, 32)
-	return string(expectedHash) == hashedPassword
+	encodedExpectedHash := base64.StdEncoding.EncodeToString(expectedHash)
+	return hashedPassword == encodedExpectedHash
 }

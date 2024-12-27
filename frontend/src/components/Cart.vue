@@ -30,26 +30,30 @@
       </div>
     </div>
     <p v-else>Your cart is currently empty.</p>
+    <div v-for="(toast, index) in toasts" :key="index" :class="['toast', toast.type]">{{ toast.message }}</div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   name: 'Cart',
   data() {
     return {
       cartItems: [],
+      toasts: [],
     };
   },
   methods: {
     async fetchCart() {
       try {
-        const response = await axios.get('http://localhost:3000/cart/', {
-          withCredentials: true,
+        const response = await fetch('http://localhost:3000/cart/', {
+          credentials: 'include',
         });
-        this.cartItems = response.data.cart_items.map(item => ({
+        if (!response.ok) {
+          throw new Error('Failed to fetch cart');
+        }
+        const data = await response.json();
+        this.cartItems = data.cart_items.map(item => ({
           id: item.id,
           cart_id: item.cart_id,
           product: {
@@ -61,6 +65,7 @@ export default {
         }));
       } catch (error) {
         console.error('Error fetching cart:', error);
+        this.showToast('Failed to fetch cart.', 'error');
       }
     },
     incrementQuantity(index) {
@@ -75,26 +80,48 @@ export default {
     },
     async updateCartItem(item) {
       try {
-        await axios.post(`http://localhost:3000/cart/`, {
-          product_id: item.product.id,
-          quantity: item.quantity,
-        }, {
-          withCredentials: true,
+        const response = await fetch(`http://localhost:3000/cart/`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            product_id: item.product.id,
+            quantity: item.quantity,
+          }),
         });
+        if (!response.ok) {
+          throw new Error('Failed to update cart item');
+        }
+        this.showToast('Cart updated successfully!', 'success');
       } catch (error) {
         console.error('Error updating cart item:', error);
+        this.showToast('Failed to update cart.', 'error');
       }
     },
     async removeItem(index) {
       const item = this.cartItems[index];
       try {
-        await axios.delete(`http://localhost:3000/cart/${item.product.id}`, {
-          withCredentials: true,
+        const response = await fetch(`http://localhost:3000/cart/${item.product.id}`, {
+          method: 'DELETE',
+          credentials: 'include',
         });
+        if (!response.ok) {
+          throw new Error('Failed to remove item from cart');
+        }
         this.cartItems.splice(index, 1);
+        this.showToast('Item removed from cart!', 'success');
       } catch (error) {
         console.error('Error removing item from cart:', error);
+        this.showToast('Failed to remove item from cart.', 'error');
       }
+    },
+    showToast(message, type) {
+      this.toasts.push({ message, type });
+      setTimeout(() => {
+        this.toasts.shift();
+      }, 5000);
     },
     goBack() {
       this.$router.go(-1);
@@ -139,6 +166,33 @@ export default {
   color: #ff4500;
 }
 
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantity-selector button {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.quantity-selector button:disabled {
+  background-color: #777;
+  cursor: not-allowed;
+}
+
+.quantity-selector span {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+}
+
 .remove-button {
   margin-left: 16px;
   position: relative;
@@ -163,9 +217,5 @@ export default {
   height: 24px;
   fill: white;
 }
-
-.remove-button:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-}
 </style>
+

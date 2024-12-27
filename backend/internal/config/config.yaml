@@ -1,7 +1,7 @@
 database:
   user: "admin"
   password: "unblsXvkEHSnPylTuNEUuR4u7xVh5JKz"
-  dbname: "webshop"
+  dbname: "heat_fashion_webshop"
   host: "localhost"
   port: 3306
 ali_express_api:

@@ -25,7 +25,7 @@
             </div>
             <div class="attribute">
               <span class="label">AliExpress ID:</span>
-              <span class="value">{{ product.aliExpressID }}</span>
+              <span class="value">{{ product.ali_express_id }}</span>
             </div>
           </div>
         </div>
@@ -47,66 +47,79 @@
 </template>
 
 <script>
-  import axios from 'axios';
-
-  export default {
-    name: 'ProductDetail',
-    props: ['id'],
-    data() {
-      return {
-        product: null,
-        toasts: [],
-        quantity: 1,
-      };
-    },
-    methods: {
-      async fetchProduct() {
-        try {
-          const response = await axios.get(`http://localhost:3000/products/${this.id}`);
-          this.product = response.data;
-        } catch (error) {
-          console.error('Error fetching product details:', error);
+export default {
+  name: 'ProductDetail',
+  props: ['id'],
+  data() {
+    return {
+      product: null,
+      toasts: [],
+      quantity: 1,
+    };
+  },
+  methods: {
+    async fetchProduct() {
+      try {
+        const response = await fetch(`http://localhost:3000/products/${this.id}`, {
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch product details');
         }
-      },
-      goBack() {
-        this.$router.go(-1);
-      },
-      incrementQuantity() {
-        this.quantity++;
-      },
-      decrementQuantity() {
-        if (this.quantity > 1) {
-          this.quantity--;
-        }
-      },
-      async addToCart() {
-        try {
-          const cartItem = {
-            product_id: this.product.id,
-            quantity: this.quantity,
-          };
-
-          await axios.post('http://localhost:3000/cart/', cartItem, {
-            withCredentials: true,
-          });
-
-          this.showToast('Product added to cart successfully!', 'success');
-        } catch (error) {
-          console.error('Error adding product to cart:', error);
-          this.showToast('Failed to add product to cart.', 'error');
-        }
-      },
-      showToast(message, type) {
-        this.toasts.push({ message, type });
-        setTimeout(() => {
-          this.toasts.shift();
-        }, 5000);
-      },
+        this.product = await response.json();
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+        this.showToast('Failed to fetch product details.', 'error');
+      }
     },
-    mounted() {
-      this.fetchProduct();
+    goBack() {
+      this.$router.go(-1);
     },
-  };
+    incrementQuantity() {
+      this.quantity++;
+    },
+    decrementQuantity() {
+      if (this.quantity > 1) {
+        this.quantity--;
+      }
+    },
+    async addToCart() {
+      try {
+        const cartItem = {
+          product_id: this.product.id,
+          quantity: this.quantity,
+        };
+
+        const response = await fetch('http://localhost:3000/cart/', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(cartItem),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add product to cart');
+        }
+
+        this.showToast('Product added to cart successfully!', 'success');
+      } catch (error) {
+        console.error('Error adding product to cart:', error);
+        this.showToast('Failed to add product to cart.', 'error');
+      }
+    },
+    showToast(message, type) {
+      this.toasts.push({ message, type });
+      setTimeout(() => {
+        this.toasts.shift();
+      }, 5000);
+    },
+  },
+  mounted() {
+    this.fetchProduct();
+  },
+};
 </script>
 
 <style scoped>

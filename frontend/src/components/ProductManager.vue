@@ -12,7 +12,7 @@
         <h3 class="product-name">{{ product.name }}</h3>
         <p class="product-price">CHF {{ product.price }}</p>
         <p class="product-id">ID: {{ product.id }}</p>
-        <p class="product-ali-id">AliExpress ID: {{ product.aliExpressID }}</p>
+        <p class="product-ali-id">AliExpress ID: {{ product.ali_express_id }}</p>
         </div>
     </div>
     </div>
@@ -20,32 +20,39 @@
 </template>
   
 <script>
-  import axios from 'axios'
-  
-  export default {
-    name: 'ProductManager',
-    data() {
-      return {
-        products: []
-      }
-    },
-    methods: {
-      async fetchProducts() {
-        try {
-          const response = await axios.get('http://localhost:3000/products/')
-          this.products = response.data
-        } catch (error) {
-          console.error('Error fetching products:', error)
+export default {
+  name: 'ProductManager',
+  data() {
+    return {
+      products: [],
+    };
+  },
+  methods: {
+    async fetchProducts() {
+      try {
+        const response = await fetch('http://localhost:3000/products/', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Error fetching products');
         }
-      },
-      goToProductDetail(productId) {
-        this.$router.push({ name: 'ProductDetail', params: { id: productId } })
+
+        const data = await response.json();
+        this.products = data;
+      } catch (error) {
+        console.error('Error fetching products:', error);
       }
     },
-    mounted() {
-      this.fetchProducts()
-    }
-  }
+    goToProductDetail(productId) {
+      this.$router.push({ name: 'ProductDetail', params: { id: productId } });
+    },
+  },
+  mounted() {
+    this.fetchProducts();
+  },
+};
 </script>
   
 <style scoped>

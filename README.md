@@ -46,9 +46,9 @@ Once connected to MariaDB, you can execute the following SQL queries:
     SHOW DATABASES;
     ```
 
-- Switch to the `webshop` database:
+- Switch to the `heat_fashion_webshop` database:
     ```sql
-    USE webshop;
+    USE heat_fashion_webshop;
     ```
 
 - Show the structure of the `product` table:
@@ -63,9 +63,9 @@ Once connected to MariaDB, you can execute the following SQL queries:
 
 ### Running the Backend
 
-1. Navigate to the `cmd/webshop` directory:
+1. Navigate to the `cmd/heat_fashion_webshop` directory:
     ```bash
-    cd cmd/webshop
+    cd cmd/heat_fashion_webshop
     ```
 
 2. Run the backend:
