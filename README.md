@@ -1,4 +1,4 @@
-# Webshop
+# Heat Fashion Webshop
 
 This is a webshop project with a **Go** backend and a **Vue.js** frontend. The backend uses a **MariaDB** database, which is run using Docker.
 
